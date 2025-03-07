@@ -1,6 +1,6 @@
 # Bot that triggers Trainline
 
-- Technologies used: Ruby, linter(Standard), RSpec.
+- Technologies used: Ruby, linter(Standard), RSpec, Redis.
 - Bot responds to `ComThetrainline.find(from, to, departure_at)` in  `com_thetrainline.rb` file.
 - By default, it runs with the following arguments: `ComThetrainline.find("Berlin Hbf", "Warszawa-Centralna", "#<DateTime: 2025-03-12T14:00:00+00:00 ((2456774j,22140s,0n),+0s,2299161j)>")`.
 - Added error handling. Configured CI for running specs and linter.
