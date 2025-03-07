@@ -1,12 +1,18 @@
 # frozen_string_literal: true
 
 require_relative "../errors/location_error"
+require_relative "../lib/redis_connection"
 
 class LocationFetcherService
   class << self
     def fetch_location_code(location)
+      location_code = get_from_cache(location)
+      return location_code if location_code
+
       response = process_request(location)
-      parse_location_code(response, location)
+      location_code = parse_location_code(response, location)
+      set_to_cache(location, location_code)
+      location_code
     end
 
     private
@@ -42,6 +48,15 @@ class LocationFetcherService
 
     def raise_location_error(message, *details)
       raise Errors::LocationError.new(message, details.map(&:to_s))
+    end
+
+    def get_from_cache(location)
+      cached_location = RedisConnection.instance.get("location_code:#{location}")
+      cached_location if cached_location
+    end
+
+    def set_to_cache(location, location_code)
+      RedisConnection.instance.set("location_code:#{location}", location_code, ex: 86_400)
     end
   end
 end
