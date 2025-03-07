@@ -56,7 +56,7 @@ class JourneysFetcherService
         type: "single",
         maximumJourneys: 10,
         includeRealtime: true,
-        transportModes: ["mixed"],
+        transportModes: %w[mixed coach],
         directSearch: false,
         composition: %w[through interchangeSplit],
         autoApplyCorporateCodes: false
