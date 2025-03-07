@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../errors/journey_parsing_error"
 
 class JourneysParserService
@@ -26,7 +28,7 @@ class JourneysParserService
         }
       end
     rescue => e
-      raise JourneyParsingError.new("Error processing journey data.", e.message)
+      raise Errors::JourneyParsingError.new("Error processing journey data.", e.message)
     end
 
     private

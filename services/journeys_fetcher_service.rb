@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../errors/journey_error"
 
 class JourneysFetcherService
@@ -26,7 +28,7 @@ class JourneysFetcherService
       handle_http_error(response) unless response.code.between?(200, 299)
 
       response
-    rescue => e
+    rescue HTTParty::Error, Timeout::Error => e
       raise_journey_error("Error fetching journeys from '#{url}'", e)
     end
 

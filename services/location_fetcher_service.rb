@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative "../errors/location_error"
 
 class LocationFetcherService
   class << self
     def fetch_location_code(location)
       response = process_request(location)
-      parse_location_code(response)
+      parse_location_code(response, location)
     end
 
     private
@@ -15,8 +17,8 @@ class LocationFetcherService
       handle_http_error(response, location) unless response.code.between?(200, 299)
 
       response
-    rescue => e
-      raise_location_error("Error fetching location: '#{location}'", e)
+    rescue HTTParty::Error, Timeout::Error => e
+      raise_location_error("Error fetching location: '#{location}' due to network or timeout issues.", e)
     end
 
     def build_url(path, params)
@@ -27,7 +29,7 @@ class LocationFetcherService
       ).to_s
     end
 
-    def parse_location_code(response)
+    def parse_location_code(response, location)
       location_code = JSON.parse(response.body).dig("searchLocations", 0, "code")
       raise_location_error("Invalid location data received for '#{location}'", response.body) if location_code.to_s.strip.empty?
 
