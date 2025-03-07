@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Errors
   class LocationError < StandardError
     attr_reader :errors
