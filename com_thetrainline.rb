@@ -24,16 +24,14 @@ class ComThetrainline
       {message: "Unexpected error, please try again later", errors: [e.message]}
     end
 
+    def fetch_location(location)
+      LocationFetcherService.fetch_location_code(location)
+    end
+
     private
 
     def validate_input(from, to, departure_at)
       Validators::JourneyValidator.new(from, to, departure_at).validate
     end
-
-    def fetch_location(location)
-      LocationFetcherService.fetch_location_code(location)
-    end
   end
 end
-
-ComThetrainline.find(ENV["FROM"], ENV["TO"], ENV["DEPARTURE_AT"])

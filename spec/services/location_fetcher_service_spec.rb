@@ -27,7 +27,7 @@ RSpec.describe LocationFetcherService do
           )
       end
 
-      it "returns the correct location code" do
+      it "returns the correct location code", :vcr do
         location_code = described_class.fetch_location_code(location)
         expect(location_code).to eq("1234")
       end
