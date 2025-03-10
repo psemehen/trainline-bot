@@ -10,4 +10,5 @@ VCR.configure do |c|
   c.before_record do |interaction|
     interaction.response.body = interaction.response.body.force_encoding("UTF-8")
   end
+  c.allow_http_connections_when_no_cassette = false
 end

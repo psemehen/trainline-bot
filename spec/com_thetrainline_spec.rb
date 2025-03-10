@@ -11,6 +11,16 @@ RSpec.describe ComThetrainline do
   describe ".find" do
     context "when valid data is provided" do
       context "when verifying the first journey" do
+        before do
+          VCR.use_cassette("ComThetrainline/fetch_location_from_#{from}") do
+            ComThetrainline.fetch_location(from)
+          end
+
+          VCR.use_cassette("ComThetrainline/fetch_location_to_#{to}") do
+            ComThetrainline.fetch_location(to)
+          end
+        end
+
         let(:first_journey_details) do
           {
             departure_station: "Berlin Hbf",
@@ -23,15 +33,15 @@ RSpec.describe ComThetrainline do
 
         let(:first_fare) do
           {
-            price_in_cents: 3526,
+            price_in_cents: 2644,
             currency_code: "GBP",
-            comfort_class: 2,
-            name: "1st class"
+            comfort_class: 1,
+            name: "2nd class"
           }
         end
 
         it "returns the correct journey details" do
-          VCR.use_cassette("ComThetrainline/journey_response") do
+          VCR.use_cassette("ComThetrainline/fetch_journeys_#{from}_#{to}") do
             result = ComThetrainline.find(from, to, departure_at)
 
             expect(result.first).to include(first_journey_details)
@@ -48,7 +58,7 @@ RSpec.describe ComThetrainline do
         let(:to) { nil }
 
         it "raises an error for missing 'from' location" do
-          VCR.use_cassette("ComThetrainline/journey_response") do
+          VCR.use_cassette("ComThetrainline/fetch_journeys_#{from}_#{to}") do
             result = ComThetrainline.find(from, to, departure_at)
 
             expect(result[:message]).to eq("Validation errors.")
