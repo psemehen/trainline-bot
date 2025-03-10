@@ -4,6 +4,7 @@ require "httparty"
 require "json"
 require "date"
 require "uri"
+require_relative "validators/journey_validator"
 Dir[File.join(__dir__, "services", "*.rb")].each { |file| require file }
 
 class ComThetrainline
@@ -11,11 +12,13 @@ class ComThetrainline
 
   class << self
     def find(from, to, departure_at)
+      validate_input(from, to, departure_at)
+
       departure_code = fetch_location(from)
       destination_code = fetch_location(to)
       response = JourneysFetcherService.fetch_journeys(departure_code, destination_code, departure_at)
       JourneysParserService.format_data(response)
-    rescue Errors::LocationError, Errors::JourneyError, Errors::JourneyParsingError => e
+    rescue Errors::LocationError, Errors::JourneyError, Errors::JourneyParsingError, Errors::ValidationError => e
       {message: e.message, errors: e.errors}
     rescue => e
       {message: "Unexpected error, please try again later", errors: [e.message]}
@@ -23,10 +26,14 @@ class ComThetrainline
 
     private
 
+    def validate_input(from, to, departure_at)
+      Validators::JourneyValidator.new(from, to, departure_at).validate
+    end
+
     def fetch_location(location)
       LocationFetcherService.fetch_location_code(location)
     end
   end
 end
 
-ComThetrainline.find("Berlin Hbf", "Warszawa-Centralna", "#<DateTime: 2025-03-12T14:00:00+00:00 ((2456774j,22140s,0n),+0s,2299161j)>")
+ComThetrainline.find(ENV["FROM"], ENV["TO"], ENV["DEPARTURE_AT"])
